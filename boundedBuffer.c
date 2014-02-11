@@ -21,7 +21,7 @@
 void *Producer (void *); // the two threads
 void *Consumer (void *);
 
-sem_t empty, full;       //global semaphores
+sem_t empty, full, mutex;       //global semaphores
 int *data;                // shared buffer, size = 1
 int numIters;
 int bufferSize;
@@ -42,9 +42,10 @@ int main(int argc, char *argv[]) {
 	bufferSize = atoi(argv[2]);
 	data = new int[bufferSize];
 
-    sem_init(&empty, SHARED, atoi(argv[2]));    // sem empty = 1
+    sem_init(&empty, SHARED, bufferSize);    // sem empty = 1
     sem_init(&full, SHARED, 0); //sem full = 0
-	
+	sem_init(&mutex, SHARED, 1); //initialize mutex to allow 1 thread access
+
 	pthread_create(&(pid[1]), NULL, Producer, NULL);
 	pthread_create(&(pid[2]), NULL, Producer, NULL);
 	pthread_create(&(pid[3]), NULL, Producer, NULL);
@@ -70,8 +71,16 @@ void *Producer(void *arg) {
     int produced;
 
     for (produced = 0; produced < numIters; produced++) {
+		//Locking to allow only 10 producers max
         sem_wait(&empty);
+		//Locking to allow only 1 thread access to data array
+		sem_wait(&mutex);
+
         data[currentIndex++ % bufferSize] = produced;
+
+		//Free mutex, allowing another thread access to data array
+		sem_post(&mutex);
+		//Signal to allow one more consumer
         sem_post(&full);
     }
 }
@@ -82,8 +91,16 @@ void *Consumer(void *arg) {
     int consumed;
 
     for (consumed = 0; consumed < numIters; consumed++) {
+		//Locking to allow only 10 consumers max
         sem_wait(&full);
+		//Locking to allow only 1 thread access to data array
+		sem_wait(&mutex);
+
         total = total + data[currentReadIndex++ % bufferSize];
+
+		//Free mutex, allow another thread access to the data array
+		sem_post(&mutex);
+		//Signal to allow one more producer
         sem_post(&empty);
     }
 
