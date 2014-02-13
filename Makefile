@@ -1,13 +1,16 @@
-CFLAGS= -g
+CFLAGS= -g -fpermissive
 LDFLAGS= -lpthread -lrt
-LDFLAGS1= -lpthread
+LDFLAGS1= -lpthread -fpermissive
 CC=g++
 
-all: boundedBuffer 
+all: boundedBuffer bridge 
 
 # To make an executable
 boundedBuffer: boundedBuffer.o 
 	$(CC) $(LDFLAGS) -o boundedBuffer boundedBuffer.o
+
+bridge: bridge.o
+	$(CC) $(LDFLAGS1) -o bridge bridge.o
 
 # To make an object from source
 .c.o:
@@ -15,5 +18,5 @@ boundedBuffer: boundedBuffer.o
 
 # clean out the dross
 clean:
-	-rm boundedBuffer *.o
+	-rm boundedBuffer bridge *.o
 
