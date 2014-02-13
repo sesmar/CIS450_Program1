@@ -16,7 +16,7 @@ int currentDirec = 0;
 bool isSafe(int direc)
 {
 	//MUTEX LOCK
-	pthread_mutex_lock(&currentNumber_mutex);
+	//pthread_mutex_lock(&currentNumber_mutex);
 	bool safe = false;
 
 	if(currentNumber==0)  //always safe when bridge is empty
@@ -34,65 +34,68 @@ bool isSafe(int direc)
 		safe = false;
 	}
 
-	pthread_mutex_unlock(&currentNumber_mutex);
+	//pthread_mutex_unlock(&currentNumber_mutex);
 	return safe;
 }
 
 void ArriveBridge(int direc, int id)
 {
-	printf("Car %d arrive start, direction: %d\n", id, direc);
+	//MUTEX LOCK
+	pthread_mutex_lock(&currentNumber_mutex);
+
 	while(!isSafe(direc))
 	{
 		pthread_cond_wait(&safe, &currentNumber_mutex);
 	}
 
-	//MUTEX LOCK
-	pthread_mutex_lock(&currentNumber_mutex);
+	printf("Car %d traveling in direction %d has arrived at the bridge. CurrDir: %d. #Cars: %d. \n", id, direc, currentDirec, currentNumber );
 
 	//increment currentNumber
 	currentNumber++;
+	currentDirec = direc;
 
 	//MUTEX UNLOCK
 	pthread_mutex_unlock(&currentNumber_mutex);
 
-	currentDirec = direc;
-	
-	//printf("Car %d traveling in direction %d has arrived at the bridge.\n", id, direc);
-	printf("Car %d traveling in direction %d has arrived at the bridge. CurrDir: %d. #Cars: %d. \n", id, direc, currentDirec, currentNumber );
 	sched_yield();
 	return;
-
 }
 
 void CrossBridge(int direc, int id)
 {
+	//MUTEX LOCK
+	pthread_mutex_lock(&currentNumber_mutex);
+
 	//crossing the bridge
 	printf("Car %d traveling in direction %d is crossing the bridge. CurrDir: %d. #Cars: %d. \n", id, direc, currentDirec, currentNumber );
+
+	//MUTEX UNLOCK
+	pthread_mutex_unlock(&currentNumber_mutex);
+
 	sched_yield();
 	return;
 }
 
 void ExitBridge(int direc, int id)
 {
-	printf("Car %d exit start\n", id);
 	//MUTEX LOCK
 	pthread_mutex_lock(&currentNumber_mutex);
 
 	currentNumber--;
+	pthread_cond_broadcast(&safe);
+
+	//printf("Car %d traveling in direction %d has exited the bridge.\n", id, direc);
+	printf("Car %d traveling in direction %d has exited the bridge. CurrDir: %d. #Cars: %d. \n", id, direc, currentDirec, currentNumber );
 
 	//MUTEX UNLOCK
 	pthread_mutex_unlock(&currentNumber_mutex);
-
-	pthread_cond_signal(&safe);
-	//printf("Car %d traveling in direction %d has exited the bridge.\n", id, direc);
-	printf("Car %d traveling in direction %d has exited the bridge. CurrDir: %d. #Cars: %d. \n", id, direc, currentDirec, currentNumber );
 	sched_yield();
 	return;
 }
 
 void *OneVehicle(void *idv)
 {
-	int id = (int) idv;
+	int id = *((int*)(&idv));
 	int direc = rand() % 2;
 
 	ArriveBridge(direc, id);
