@@ -35,7 +35,7 @@ int main(int argc, char *argv[]) {
 
     if (argc < 3) {
 	    printf("Usage: boundedBuffer <Number of Iterations> <bufer size>\n");
-	    printf(" e.g.: ./boundedBuffer 100 \n"); 
+	    printf(" e.g.: ./boundedBuffer 100 10\n"); 
 	    exit(0);
     }
     numIters = atoi(argv[1]);
