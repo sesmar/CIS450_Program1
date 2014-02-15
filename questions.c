@@ -21,7 +21,7 @@ void AnswerStart();
 void AnswerFinish();
 
 //Declare global semaphores
-sem_t questionStart, answerStart, answerDone;
+sem_t questionStart, answerStart, answerDone, readyForQuestion;
 
 int main(int argc, char *argv[])
 {
@@ -45,6 +45,7 @@ int main(int argc, char *argv[])
 	sem_init(&questionStart, SHARED, 1);    
 	sem_init(&answerStart, SHARED, 0);
 	sem_init(&answerDone, SHARED, 0);
+	sem_init(&readyForQuestion, SHARED, 0);
 
 	pthread_attr_init(&attr);
 	pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
@@ -85,6 +86,9 @@ void *Professor(void *numStudents)
 	for(i; i>0; i--)
 	{
 		printf("The professor wants to be asked a question.\n");
+		
+		sem_post(&readyForQuestion);
+
 		AnswerStart();
 
 		printf("Professor is answering the question.\n");
@@ -103,8 +107,6 @@ void *Student(void *pId)
 
 	printf("Student %d is asking a question.\n", studentId);
 	printf("Student %d is done asking a question.\n", studentId);
-	
-	sem_post(&answerStart);     //tell professor thread to answer
 
 	QuestionFinish(studentId);
 
@@ -115,6 +117,8 @@ void QuestionStart(int studentId)
 {
 	printf("Student %d is waiting to ask a question.\n", studentId);
 
+	sem_wait(&readyForQuestion);
+
 	sem_wait(&questionStart);    //wait for opportunity to ask question
 
 	sched_yield();
@@ -122,6 +126,7 @@ void QuestionStart(int studentId)
 
 void QuestionFinish(int studentId)
 {
+	sem_post(&answerStart);     //tell professor thread to answer
 	sem_wait(&answerDone);      //wait until professor thread finishes answering question
 
 	printf("Student %d received the answer and is leaving.\n", studentId);
