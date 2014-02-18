@@ -2,11 +2,9 @@ CIS 450
 Program 1
 Team 1: Michael Ingrody and Chris Sims
 
-
-
-
 /******Bounded Buffer******/
-
+	Files:
+		boundedBuffer.c
 
 	Implementation: 
 			Created a bounded buffer that wraps according to the buffer size.
@@ -15,10 +13,7 @@ Team 1: Michael Ingrody and Chris Sims
 			exclusivity with a semaphore before making the changes. At the end of the program,
 			the three thread's total iterations will add up to (4950 * 3).
 
-
 	Instructions: ./boundedBuffer [number of iterations] [buffer size]
-
-
 
 	Sample Output:
 
@@ -32,11 +27,9 @@ Team 1: Michael Ingrody and Chris Sims
 	the total is 4740
 	the total is 6170
 
-
-
-
 /******Bridge******/
-
+	Files:
+		bridge.c
 
 	Implementation: 
 
@@ -46,10 +39,7 @@ Team 1: Michael Ingrody and Chris Sims
 			supplied along with this implementation	ensures that no collisions or bridge capacity violations
 			will occur between the 50 cars trying to cross the bridge.
 
-
 	Instructions: ./bridge
-
-
 
 	Sample Output:
 
@@ -70,25 +60,40 @@ Team 1: Michael Ingrody and Chris Sims
 	Car 0 traveling in direction 1 has exited the bridge. CurrDir: 1. #Cars: 0. 
 	Main(): Waited on 50 threads.  Done.
 
-
 /******Questions******/
-
-
+	Files:
+		questions.c
 
 	Algorithm Design:
+	A student can only as a question when the professor is ready to answer a question.
+	The professor can only answer a question after a question has been asked.
+	A student can only leave after the professor has given an answer to his/her question.
+	A student can arrive at anytime during the process but must wait until the professor is next available to ask a question.
 
-
+	Professor wakes up from nap
+	while (true){
+		readyForQuestion.signal()
+		Student arrives
+		readyForQuestion.wait()
+		questionStart.wait()
+		Student asks question
+		answerStart.signal()
+		Student waits for answers (answerDone.wait())
+		Professor finishes answer (answerDone.signal())
+		Student Leaves
+		questionStart.signal()
+	}
+	questionStart.Signal()
+	
 	Implementation:
-
-
+	Create a sempaphore for readyForQuestion: initial 0, professor post when he/she is ready for a question
+	Create a semaphore for questionStart: initial 1, student wait once they have arrived.
+	Create a semaphore for answerStart: professor wait until questions is asked.
+	Create a semaphore for answerDone: professor post when answer is given.
 
 	Instructions: ./questions [number of students]
 
-
-
-
 	Sample Output:
-
 	
 	./questions 3
 	Student 3 is waiting to ask a question.
@@ -115,7 +120,6 @@ Team 1: Michael Ingrody and Chris Sims
 	All student questions have been answered.
 
 
-
 	./questions 50
 	Student 3 is waiting to ask a question.
 	Student 4 is waiting to ask a question.
@@ -131,7 +135,3 @@ Team 1: Michael Ingrody and Chris Sims
 	The professor is finished with the answer.
 	Student 50 received the answer and is leaving.
 	All student questions have been answered.
-
-
-
-
