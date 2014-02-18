@@ -1,0 +1,137 @@
+CIS 450
+Program 1
+Team 1: Michael Ingrody and Chris Sims
+
+
+
+
+/******Bounded Buffer******/
+
+
+	Implementation: 
+			Created a bounded buffer that wraps according to the buffer size.
+			Before producing or consuming, the thread waits for the buffer to be empty
+			or full, respectively.  This is done with semaphores.  Then it ensures mutual 
+			exclusivity with a semaphore before making the changes. At the end of the program,
+			the three thread's total iterations will add up to (4950 * 3).
+
+
+	Instructions: ./boundedBuffer [number of iterations] [buffer size]
+
+
+
+	Sample Output:
+
+	./boundedBuffer 100 100
+	the total is 4950
+	the total is 4950
+	the total is 4950
+
+	./boundedBuffer 100 10
+	the total is 3940
+	the total is 4740
+	the total is 6170
+
+
+
+
+/******Bridge******/
+
+
+	Implementation: 
+
+			This program uses mutex and conditional variables.  Whenever the count for the number
+			of cars on the bridge is modified, it is locked to ensure mutual exclusivity.  The conditional
+			variable &safe is used to give cars a programming "green light" to cross the bridge.  The algorithm
+			supplied along with this implementation	ensures that no collisions or bridge capacity violations
+			will occur between the 50 cars trying to cross the bridge.
+
+
+	Instructions: ./bridge
+
+
+
+	Sample Output:
+
+	./bridge
+	Car 3 traveling in direction 0 has arrived at the bridge. CurrDir: 0. #Cars: 0.
+	Car 6 traveling in direction 0 has arrived at the bridge. CurrDir: 0. #Cars: 1.
+	Car 6 traveling in direction 0 is crossing the bridge. CurrDir: 0. #Cars: 2. 
+	Car 6 traveling in direction 0 has exited the bridge. CurrDir: 0. #Cars: 1. 
+	Car 2 traveling in direction 0 has arrived at the bridge. CurrDir: 0. #Cars: 1.
+	.
+	.
+	.
+	Car 49 traveling in direction 1 is crossing the bridge. CurrDir: 1. #Cars: 2. 
+	Car 49 traveling in direction 1 has exited the bridge. CurrDir: 1. #Cars: 1. 
+	Car 0 traveling in direction 1 has arrived at the bridge. CurrDir: 1. #Cars: 1.
+	Car 32 traveling in direction 1 has exited the bridge. CurrDir: 1. #Cars: 1. 
+	Car 0 traveling in direction 1 is crossing the bridge. CurrDir: 1. #Cars: 1. 
+	Car 0 traveling in direction 1 has exited the bridge. CurrDir: 1. #Cars: 0. 
+	Main(): Waited on 50 threads.  Done.
+
+
+/******Questions******/
+
+
+
+	Algorithm Design:
+
+
+	Implementation:
+
+
+
+	Instructions: ./questions [number of students]
+
+
+
+
+	Sample Output:
+
+	
+	./questions 3
+	Student 3 is waiting to ask a question.
+	Student 2 is waiting to ask a question.
+	Student 1 is waiting to ask a question.
+	The professor wants to be asked a question.
+	Student 3 is asking a question.
+	Student 3 is done asking a question.
+	Professor is answering the question.
+	The professor is finished with the answer.
+	Student 3 received the answer and is leaving.
+	The professor wants to be asked a question.
+	Student 2 is asking a question.
+	Student 2 is done asking a question.
+	Professor is answering the question.
+	The professor is finished with the answer.
+	Student 2 received the answer and is leaving.
+	The professor wants to be asked a question.
+	Student 1 is asking a question.
+	Student 1 is done asking a question.
+	Professor is answering the question.
+	The professor is finished with the answer.
+	Student 1 received the answer and is leaving.
+	All student questions have been answered.
+
+
+
+	./questions 50
+	Student 3 is waiting to ask a question.
+	Student 4 is waiting to ask a question.
+	Student 5 is waiting to ask a question.
+	.
+	.
+	.
+	Student 49 received the answer and is leaving.
+	The professor wants to be asked a question.
+	Student 50 is asking a question.
+	Student 50 is done asking a question.
+	Professor is answering the question.
+	The professor is finished with the answer.
+	Student 50 received the answer and is leaving.
+	All student questions have been answered.
+
+
+
+
